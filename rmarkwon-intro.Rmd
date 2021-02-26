@@ -1,0 +1,123 @@
+---
+title: "Intro to RMarkdown"
+output: html_document
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Headers
+
+#### Deeper level header
+
+Write some text. Rmarkdown is really cool.
+
+This is a new line. We need to include a black line to creat a new line.
+
+-   apple
+-   banana
+-   kiwi
+
+# Level 1 header
+
+## Level 2 header
+
+*writing in italic; does it work?*
+
+1.  **apple**
+
+2.  banana
+
+3.  kiwi
+
+    -   Item 3a
+    -   Item 3b
+
+[Artic Data Center](http://articdata.io)
+
+[@oke2020]
+
+| Fruit | Color | Deliciousness |
+|-------|-------|---------------|
+| apple | red   | no            |
+| apple | green | yes           |
+| pear  | green | yes           |
+
+: Fruit Tastiness
+
+
+To insert a new code chunk we have **two** options:
+
+1. Insert code chunk icon/dropdown
+2. Ctrl + Atl + i
+
+
+
+```{r}
+x <- 3 * 3 
+x
+```
+
+
+It is better to include all the packages at the top of our Markdown
+
+```{r}
+library(readr)
+```
+
+
+## Introduction
+
+* read in and reference data source
+
+*echo shows the code in the Markdown, message shows the output message*
+
+```{r read-data, message = FALSE}
+bg_chem <- read_csv("BGchem2008data.csv")
+```
+
+
+## Analysis
+
+* calculate basic summary stats
+  - mean NO3
+  - mean NO2
+  - mean NH4
+  - mean P
+
+```{r basic summary stats}
+NO3 <- mean(bg_chem$NO3)
+NO2 <- mean(bg_chem$NO2)
+NH4 <- mean(bg_chem$NH4)
+P <- mean(bg_chem$P)
+```
+
+* calculate mean redfield ratio
+
+```{r}
+red <- (NO3 + NO2 + NH4) / P
+```
+
+We calculated the Redfield ratio to be `r round(red, 2)`
+
+
+* plot redfield ratio
+
+```{r, echo = FALSE}
+plot(bg_chem$P, bg_chem$NO2 + bg_chem$NO3 + bg_chem$NH4)
+```
+
+How do I decide when to make a new chunk?
+
+*We should use one chunk for one "thing"*
+
+*One plot per chunk is ideal*
+
+*If we are using too much comments it's a sign*
+
+**How to convert R chunks into a R script?**
+
+https://bookdown.org/yihui/rmarkdown-cookbook/purl.html
+
