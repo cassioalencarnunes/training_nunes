@@ -1,0 +1,62 @@
+---
+title: "Data Cleaning"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Loading packages
+
+```{r, message = FALSE}
+library(dplyr)
+library(tidyr)
+library(readr)
+```
+# Loading data
+
+```{r, message = FALSE}
+catch_original <- read_csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1")
+```
+
+# Changing the original data
+
+Pipe shortcut:ctrl + shift + m
+
+```{r}
+catch_data <- catch_original %>% 
+  select(Region, Year, Chinook, Sockeye, Coho, Pink, Chum)
+#select(Region:Chum)
+#select(-All, -notesRegCode)
+```
+
+```{r}
+catch_clean <- catch_data %>% 
+  mutate(Chinook = as.numeric(Chinook))
+```
+
+```{r}
+catch_clean <- catch_data %>% 
+  mutate(Chinook = ifelse(Chinook == "I", 1, Chinook)) %>% 
+  mutate(Chinook = as.numeric(Chinook))
+```
+
+#Tranforming to long format
+
+```{r}
+catch_long <- catch_clean %>% 
+  pivot_longer(cols = -c(Region, Year), names_to = "species", values_to = "catch")
+
+catch_wide <- catch_long %>% 
+  pivot_wider(names_from = species, values_from = catch)
+#Don't need to use ""
+```
+
+#Renaming a column
+
+```{r}
+catch_long <- catch_long %>% 
+  rename(catch_thousands = catch)
+```
+
