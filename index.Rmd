@@ -9,3 +9,6 @@ The modules I've gotten through:
 
 - [Session 8: Data Cleaning](session-8-cleaning.html)
 - [RMarkdown Intro](rmarkwon-intro.html)
+- [Session 9: Data Visualisation](data-viz.html) 
+
+![Example of image inserted in my page](chart.png)

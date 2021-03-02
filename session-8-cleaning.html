@@ -216,16 +216,60 @@ library(readr)</code></pre>
 <pre class="r"><code>catch_clean &lt;- catch_data %&gt;% 
   mutate(Chinook = ifelse(Chinook == &quot;I&quot;, 1, Chinook)) %&gt;% 
   mutate(Chinook = as.numeric(Chinook))</code></pre>
-<p>#Tranforming to long format</p>
+</div>
+<div id="tranforming-to-long-format" class="section level1">
+<h1>Tranforming to long format</h1>
 <pre class="r"><code>catch_long &lt;- catch_clean %&gt;% 
   pivot_longer(cols = -c(Region, Year), names_to = &quot;species&quot;, values_to = &quot;catch&quot;)
 
 catch_wide &lt;- catch_long %&gt;% 
   pivot_wider(names_from = species, values_from = catch)
 #Don&#39;t need to use &quot;&quot;</code></pre>
-<p>#Renaming a column</p>
+</div>
+<div id="renaming-a-column" class="section level1">
+<h1>Renaming a column</h1>
 <pre class="r"><code>catch_long &lt;- catch_long %&gt;% 
   rename(catch_thousands = catch)</code></pre>
+</div>
+<div id="changing-the-units" class="section level1">
+<h1>Changing the units</h1>
+<pre class="r"><code>catch_long &lt;- catch_long %&gt;%
+mutate(catch = catch_thousands *1000)
+
+catch_long &lt;- catch_long %&gt;%
+mutate(catch = catch_thousands *1000) %&gt;%
+select(-catch_thousands)</code></pre>
+</div>
+<div id="calculating-the-mean-and-the-number-of-catches" class="section level1">
+<h1>Calculating the mean and the number of catches</h1>
+<pre class="r"><code>mean_region &lt;- catch_long %&gt;%
+group_by(Region) %&gt;%
+summarise(catch_mean = mean(catch)) %&gt;% 
+arrange(desc(catch_mean))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>n_region &lt;- catch_long %&gt;%
+group_by(Region) %&gt;%
+summarise(n = n())</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+</div>
+<div id="creating-a-subset-of-the-data" class="section level1">
+<h1>Creating a subset of the data</h1>
+<pre class="r"><code>SSE_catch &lt;- catch_long %&gt;%
+filter(Region == &quot;SSE&quot;)</code></pre>
+</div>
+<div id="joining-two-tables-that-have-a-link-using-the-foreign-key" class="section level1">
+<h1>Joining two tables that have a link (using the foreign key)</h1>
+<pre class="r"><code>region_defs &lt;- read_csv(&quot;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1&quot;) %&gt;%
+select(code, mgmtArea)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   code = col_character(),
+##   mgmtArea = col_character(),
+##   areaClass = col_character(),
+##   regionCode = col_double(),
+##   notes = col_character()
+## )</code></pre>
+<pre class="r"><code>catch_joined &lt;- left_join(catch_long, region_defs, by = c(&quot;Region&quot; = &quot;code&quot;))</code></pre>
 </div>
 
 

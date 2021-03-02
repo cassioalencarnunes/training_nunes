@@ -42,7 +42,7 @@ catch_clean <- catch_data %>%
   mutate(Chinook = as.numeric(Chinook))
 ```
 
-#Tranforming to long format
+# Tranforming to long format
 
 ```{r}
 catch_long <- catch_clean %>% 
@@ -53,10 +53,52 @@ catch_wide <- catch_long %>%
 #Don't need to use ""
 ```
 
-#Renaming a column
+# Renaming a column
 
 ```{r}
 catch_long <- catch_long %>% 
   rename(catch_thousands = catch)
+```
+
+# Changing the units
+
+```{r}
+catch_long <- catch_long %>%
+mutate(catch = catch_thousands *1000)
+
+catch_long <- catch_long %>%
+mutate(catch = catch_thousands *1000) %>%
+select(-catch_thousands)
+```
+
+# Calculating the mean and the number of catches
+
+```{r}
+mean_region <- catch_long %>%
+group_by(Region) %>%
+summarise(catch_mean = mean(catch)) %>% 
+arrange(desc(catch_mean))
+
+n_region <- catch_long %>%
+group_by(Region) %>%
+summarise(n = n())
+```
+
+# Creating a subset of the data
+
+```{r}
+SSE_catch <- catch_long %>%
+filter(Region == "SSE")
+```
+
+# Joining two tables that have a link (using the foreign key)
+
+```{r}
+region_defs <- read_csv("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1") %>%
+select(code, mgmtArea)
+
+
+catch_joined <- left_join(catch_long, region_defs, by = c("Region" = "code"))
+
 ```
 
